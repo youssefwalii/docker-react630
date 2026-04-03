@@ -1,11 +1,18 @@
 version: "3.9"
 
 services:
-
   web:
-    build: .
+    build:
+      context: .
+      target: build        # ← only run the first stage (node, not nginx)
     ports:
-      - "8080:80"
+      - "3000:3000"
+    volumes:
+      - .:/app             # ← mounts your local code into the container
+      - /app/node_modules  # ← keeps container's node_modules intact
+    environment:
+      - CHOKIDAR_USEPOLLING=true   # ← enables file watching in WSL/Docker
+    command: npm start     # ← runs dev server instead of nginx
 
     deploy:
       resources:
